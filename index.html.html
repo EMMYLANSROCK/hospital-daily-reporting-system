@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMMYLANSROCK ENGINE — Hospital Management System</title>
+<style>
+:root{--blue:#1769aa;--blue-dark:#104a7a;--ink:#183047;--muted:#61758a;--line:#cbd8e5;--white:#fff;--green:#16845b;--amber:#fff6dc;--red:#8a2222;--side:#0f2a44}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(135deg,rgba(12,43,68,.86),rgba(12,43,68,.68)),url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1800&q=85') center/cover fixed;min-height:100vh;padding:24px 14px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 16px;font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:var(--blue);color:white}.primary:hover{background:var(--blue-dark)}
+.secondary{background:#e8f0f7;color:#194b73}.success{background:var(--green);color:white}
+.danger-btn{background:#fae8e8;color:var(--red)}
+.hidden{display:none!important}
+.card{background:var(--white);border-radius:18px;padding:28px;box-shadow:0 16px 45px #071b2d55}
+.auth-wrap{max-width:460px;margin:0 auto;background:rgba(255,255,255,.97);backdrop-filter:blur(4px)}
+.app-wrap{max-width:1400px;margin:0 auto}
+.logo{font-size:38px;margin:0 0 8px;text-align:center}
+.brand{font-size:24px;margin:0 0 12px;color:#102e4b;text-align:center}
+.subtitle{color:var(--muted);margin:0 0 16px;text-align:center}
+.warning{background:var(--amber);color:#805400;padding:12px;border-radius:9px;font-size:13px;line-height:1.45;margin:14px 0}
+.field{margin:13px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:white;color:var(--ink)}
+textarea{min-height:86px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #8bc5f1;border-color:var(--blue)}
+.password-wrapper{display:flex;gap:8px}.password-wrapper input{flex:1;min-width:0}.password-toggle{background:#e8f0f7;color:#194b73;min-width:72px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.actions button{flex:1}
+.full{width:100%;margin-top:10px}.tabs{display:flex;gap:8px;margin:16px 0}.tabs button{flex:1}
+.message{font-size:13px;line-height:1.45;margin-top:12px;overflow-wrap:anywhere}
+.progress-area{margin:12px 0 22px}.step-meta{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin-bottom:8px}
+progress{width:100%;height:10px;accent-color:var(--blue)}
+.step h2{font-size:21px;margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}.wide{grid-column:1/-1}
+.review-list{border:1px solid var(--line);border-radius:10px;overflow:hidden}.review-row{display:grid;grid-template-columns:minmax(130px, .8fr) 1.4fr;border-bottom:1px solid #e4ebf1}.review-row:last-child{border-bottom:0}.review-row strong,.review-row span{padding:11px 12px;overflow-wrap:anywhere}.review-row strong{background:#f3f7fa}
+.records{margin-top:20px}.records h2{font-size:19px}.record-item{padding:13px;border:1px solid var(--line);border-radius:10px;margin:8px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.9)}.record-item p{margin:4px 0;color:var(--muted);font-size:13px}
+.small{font-size:12px;color:var(--muted)}.danger{background:#fae8e8;color:#8a2222}
+.modal-overlay{position:fixed;inset:0;background:rgba(7,27,45,.68);display:flex;align-items:center;justify-content:center;padding:18px;z-index:1000;overflow:auto}
+.modal-box{background:#fff;border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 22px 60px #071b2d99}
+.modal-box h2{margin-top:0;font-size:20px}
+.share-option{display:block;width:100%;text-align:left;padding:14px 16px;margin:8px 0;border-radius:10px;font-weight:700;border:1px solid var(--line);background:#f6fafd;color:#194b73}
+.share-option:hover{background:#e8f0f7}
+
+/* ==================== HOME PAGE BACKGROUND SLIDESHOW ==================== */
+#homeSlideshow{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
+}
+#homeSlideshow .slide{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  opacity:0;
+  transition:opacity 1.5s ease-in-out;
+}
+#homeSlideshow .slide.active{opacity:1}
+#homeSlideshow::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(12,43,68,.78),rgba(12,43,68,.62));
+  z-index:1;
+}
+#homeSlideshow .slide{z-index:0}
+
+/* ==== App layout ==== */
+.app-shell{display:grid;grid-template-columns:230px 1fr;gap:16px;max-width:1400px;margin:0 auto}
+.sidebar{
+  border-radius:18px;
+  padding:18px 12px;
+  color:#dce8f2;
+  box-shadow:0 16px 45px #071b2d55;
+  height:fit-content;
+  position:sticky;
+  top:14px;
+  background:
+    linear-gradient(rgba(15,42,68,.93),rgba(15,42,68,.93)),
+    url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=900&q=80') center/cover no-repeat;
+}
+.sidebar-brand{font-weight:800;font-size:15px;color:#fff;padding:6px 8px 14px;border-bottom:1px solid #1e4b74;margin-bottom:10px}
+.sidebar nav{display:flex;flex-direction:column;gap:3px;max-height:calc(100vh - 120px);overflow:auto}
+.sidebar button{background:transparent;color:#c9dcec;text-align:left;padding:9px 12px;border-radius:8px;font-weight:600;font-size:13px}
+.sidebar button:hover{background:#163b5c}
+.sidebar button.active{background:var(--blue);color:#fff}
+.sidebar .role-tag{font-size:11px;background:#163b5c;color:#9ec2df;padding:4px 8px;border-radius:6px;display:inline-block;margin:6px 8px 12px}
+.content-panel{background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-radius:18px;padding:24px;box-shadow:0 16px 45px #071b2d55;min-height:70vh}
+.content-panel h2{margin-top:0}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.section-head h2{margin:0;font-size:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:rgba(244,248,252,.95);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat b{display:block;font-size:24px;color:var(--blue-dark)}
+.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;background:rgba(255,255,255,.94);border-radius:10px;overflow:hidden}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #e4ebf1;overflow-wrap:anywhere}
+th{background:#f3f7fa;font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
+tr:hover td{background:#f8fbfe}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.badge.green{background:#d8f0e5;color:#0d5c3e}.badge.amber{background:#fff2cc;color:#8a5a00}.badge.red{background:#fae0e0;color:#8a2222}.badge.blue{background:#dbeaf9;color:#14507f}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input,.toolbar select{max-width:220px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chip-list{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#e8f0f7;border-radius:20px;padding:6px 12px;font-size:12px}
+.notif{padding:12px;border-radius:10px;background:rgba(255,249,230,.95);border:1px solid #f1dda2;margin-bottom:8px;font-size:13px}
+.notif.red{background:rgba(253,236,236,.95);border-color:#f3c2c2}
+.audit-line{font-family:monospace;font-size:12px;padding:6px 0;border-bottom:1px dashed #e4ebf1;background:rgba(255,255,255,.6)}
+
+@media(max-width:900px){.app-shell{grid-template-columns:1fr}.sidebar{position:relative;top:0}.sidebar nav{max-height:none}.two-col{grid-template-columns:1fr}}
+@media(max-width:600px){body{padding:12px 8px}.card,.content-panel{padding:18px 14px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.brand{font-size:21px}.review-row{grid-template-columns:1fr}.review-row strong{padding-bottom:3px}.review-row span{padding-top:4px}.modal-box{padding:18px 14px}}
+@media print{#homeSlideshow{display:none!important}body{background:white;padding:0;color:#111}.no-print,#authScreen,header.app-header,.records,.warning,.sidebar{display:none!important}.card{box-shadow:none;padding:0;border-radius:0}.content-panel{background:white;backdrop-filter:none}.review-row strong{background:#f0f0f0}#patientWizard{display:block!important}.step{display:none!important}#step-review{display:block!important}#reviewSummary{display:block!important}}
+</style>
+</head>
+<body>
+
+<!-- ==================== HOME PAGE BACKGROUND SLIDESHOW ==================== -->
+<div id="homeSlideshow" aria-hidden="true">
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=80')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=80')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1920&q=80')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=1920&q=80')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1920&q=80')"></div>
+</div>
+
+<!-- ============================================================
+     AUTH SCREEN
+     ============================================================ -->
+<section id="authScreen" class="auth-wrap card">
+  <div class="logo" aria-hidden="true">🏥</div>
+  <h1 class="brand">EMMYLANSROCK ENGINE</h1>
+  <p class="subtitle">Hospital Management System</p>
+  <div class="warning">Demonstration version only. Do not enter real patient data until secure server storage, authentication, and access controls are configured.</div>
+  <div class="tabs no-print">
+    <button type="button" id="loginTab" class="primary" onclick="showAuth('login')">Login</button>
+    <button type="button" id="registerTab" class="secondary" onclick="showAuth('register')">Create Account</button>
+  </div>
+  <form id="loginForm">
+    <div class="field"><label for="loginIdentity">Username, email or phone</label><input id="loginIdentity" autocomplete="username" placeholder="Enter your username" required></div>
+    <div class="field"><label for="loginPassword">Password</label><div class="password-wrapper"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" class="password-toggle" data-toggle="loginPassword">Show</button></div></div>
+    <button class="primary full" type="submit">Login</button>
+    <p id="loginMessage" class="message" role="status"></p>
+  </form>
+  <form id="registerForm" class="hidden">
+    <h2>Create Staff Account</h2>
+    <div class="field"><label for="regUsername">Username *</label><input id="regUsername" required minlength="3" maxlength="60" autocomplete="username"></div>
+    <div class="field"><label for="regEmail">Email *</label><input id="regEmail" type="email" required autocomplete="email"></div>
+    <div class="field"><label for="regPhone">Telephone *</label><input id="regPhone" type="tel" required autocomplete="tel"></div>
+    <div class="field"><label for="regRole">Role *</label>
+      <select id="regRole" required>
+        <option value="admin">Hospital Director / Manager (Admin)</option>
+        <option value="doctor">Doctor</option>
+        <option value="nurse">Nurse</option>
+        <option value="receptionist">Receptionist</option>
+        <option value="pharmacist">Pharmacist</option>
+        <option value="lab">Laboratory Technician</option>
+        <option value="accountant">Accountant</option>
+      </select>
+    </div>
+    <div class="field"><label for="regPassword">Create password (at least 8 characters) *</label><div class="password-wrapper"><input id="regPassword" type="password" minlength="8" required autocomplete="new-password"><button type="button" class="password-toggle" data-toggle="regPassword">Show</button></div></div>
+    <div class="field"><label for="regConfirm">Confirm password *</label><div class="password-wrapper"><input id="regConfirm" type="password" minlength="8" required autocomplete="new-password"><button type="button" class="password-toggle" data-toggle="regConfirm">Show</button></div></div>
+    <button class="primary full" type="submit">Create Account</button>
+    <p class="small">Demo account details are stored only in this browser. This is not suitable for real hospital accounts.</p>
+    <p id="registerMessage" class="message" role="status"></p>
+  </form>
+</section>
+
+<!-- ============================================================
+     APP SHELL (sidebar + content)
+     ============================================================ -->
+<main id="appScreen" class="app-shell hidden">
+
+  <aside class="sidebar no-print">
+    <div class="sidebar-brand">🏥 EMMYLANSROCK</div>
+    <span class="role-tag" id="roleTag">Role</span>
+    <nav id="sideNav">
+      <button data-tab="dashboard" class="active">📊 Dashboard</button>
+      <button data-tab="report">📝 Daily Report</button>
+      <button data-tab="patients">🧑‍⚕️ Patient Records</button>
+      <button data-tab="appointments">📅 Appointments</button>
+      <button data-tab="queue">👥 Patient Queue</button>
+      <button data-tab="pharmacy">💊 Pharmacy & Stock</button>
+      <button data-tab="lab">🔬 Laboratory</button>
+      <button data-tab="billing">🧾 Billing & Invoices</button>
+      <button data-tab="insurance">🛡️ Insurance Claims</button>
+      <button data-tab="beds">🛏️ Beds & Wards</button>
+      <button data-tab="staff">👨‍⚕️ Staff & Roster</button>
+      <button data-tab="analytics">📈 Reports & Analytics</button>
+      <button data-tab="notifications">🔔 Notifications</button>
+      <button data-tab="audit">🕵️ Audit Trail</button>
+      <button data-tab="backup">💾 Backup & Recovery</button>
+      <button data-tab="documents">📎 Document Center</button>
+      <button data-tab="feedback">💬 Feedback & Complaints</button>
+      <button data-tab="emergency">🚨 Emergency & Triage</button>
+      <button data-tab="ai">🤖 AI Assistant</button>
+      <button data-tab="users">🔐 Users & Roles</button>
+      <button onclick="logout()" style="margin-top:8px;background:#163b5c;color:#ffd7d7">🚪 Logout</button>
+    </nav>
+  </aside>
+
+  <div class="content-panel">
+    <header class="app-header no-print" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+      <div><h2 id="currentTabTitle" style="margin:0">Dashboard</h2><p class="small" style="margin:2px 0 0">Hospital Daily Reporting &amp; Management System</p></div>
+      <div class="toolbar" style="margin:0">
+        <button class="secondary" type="button" onclick="newRecord()">+ New Patient Report</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="tab-panel" id="tab-dashboard">
+      <div class="stats" id="dashboardStats"></div>
+      <div class="two-col">
+        <div class="card" style="box-shadow:none;border:1px solid var(--line)"><h3 style="margin-top:0">Recent Activity</h3><div id="dashboardActivity"></div></div>
+        <div class="card" style="box-shadow:none;border:1px solid var(--line)"><h3 style="margin-top:0">Alerts</h3><div id="dashboardAlerts"></div></div>
+      </div>
+    </section>
+
+    <!-- DAILY REPORT -->
+    <section class="tab-panel hidden" id="tab-report">
+      <div class="progress-area no-print"><div class="step-meta"><span id="stepLabel">Step 1 of 4</span><span id="stepName">Patient Details</span></div><progress id="stepProgress" value="1" max="4"></progress></div>
+      <form id="wizardForm">
+        <section class="step" data-step="0">
+          <h2>Step 1 — Patient Details</h2>
+          <div class="grid">
+            <div class="field"><label for="hospitalName">Hospital name *</label><input id="hospitalName" required></div>
+            <div class="field"><label for="hospitalAddress">Hospital address</label><input id="hospitalAddress"></div>
+            <div class="field"><label for="hospitalContact">Hospital phone / email</label><input id="hospitalContact"></div>
+            <div class="field"><label for="reportDate">Report date *</label><input id="reportDate" type="date" required></div>
+            <div class="field"><label for="patientName">Patient full name *</label><input id="patientName" required></div>
+            <div class="field"><label for="patientRecord">Patient record number</label><input id="patientRecord"></div>
+            <div class="field"><label for="patientAge">Age</label><input id="patientAge" type="number" min="0" max="125"></div>
+            <div class="field"><label for="patientSex">Sex</label><select id="patientSex"><option value="">Select</option><option>Female</option><option>Male</option><option>Other / not recorded</option></select></div>
+            <div class="field"><label for="patientAddress">Patient address</label><input id="patientAddress"></div>
+            <div class="field"><label for="patientPhone">Patient / guardian phone</label><input id="patientPhone" type="tel"></div>
+            <div class="field"><label for="arrivalTime">Arrival date and time *</label><input id="arrivalTime" type="datetime-local" required></div>
+            <div class="field"><label for="careUnit">Department / ward</label><input id="careUnit" placeholder="e.g. Emergency, Maternity"></div>
+          </div>
+        </section>
+        <section class="step hidden" data-step="1">
+          <h2>Step 2 — Medical Information</h2>
+          <div class="grid">
+            <div class="field wide"><label for="complaint">Illness / presenting complaint *</label><textarea id="complaint" required></textarea></div>
+            <div class="field wide"><label for="diagnosis">Diagnosis / assessment</label><textarea id="diagnosis"></textarea></div>
+            <div class="field"><label for="clinician">Doctor / clinician name</label><input id="clinician"></div>
+            <div class="field"><label for="treatmentTime">Treatment date and time</label><input id="treatmentTime" type="datetime-local"></div>
+            <div class="field wide"><label for="treatment">Treatment / care given</label><textarea id="treatment"></textarea></div>
+            <div class="field wide"><label for="medicines">Medicine name, dose and instructions</label><textarea id="medicines"></textarea></div>
+            <div class="field wide"><label for="events">Other important events / notes</label><textarea id="events"></textarea></div>
+          </div>
+        </section>
+        <section class="step hidden" data-step="2">
+          <h2>Step 3 — Outcome &amp; Payment</h2>
+          <div class="grid">
+            <div class="field"><label for="patientStatus">Patient outcome / status *</label><select id="patientStatus" required><option value="">Select status</option><option>Under treatment</option><option>Admitted</option><option>Discharged</option><option>Referred to another facility</option><option>Other</option></select></div>
+            <div class="field"><label for="departureTime">Discharge / referral date and time</label><input id="departureTime" type="datetime-local"></div>
+            <div class="field"><label for="paymentMethod">Insurance / payment method</label><select id="paymentMethod"><option value="">Not recorded</option><option>RSSB / community-based insurance</option><option>Private insurance</option><option>Cash / self-pay</option><option>Other</option></select></div>
+            <div class="field"><label for="insuranceNumber">Insurance reference</label><input id="insuranceNumber"></div>
+            <div class="field"><label for="totalBill">Total bill (RWF)</label><input id="totalBill" type="number" min="0" step="1" value="0"></div>
+            <div class="field"><label for="amountPaid">Amount paid (RWF)</label><input id="amountPaid" type="number" min="0" step="1" value="0"></div>
+            <div class="field wide"><label for="followUp">Follow-up / next steps</label><textarea id="followUp"></textarea></div>
+          </div>
+        </section>
+        <section class="step hidden" data-step="3" id="step-review">
+          <h2>Step 4 — Review &amp; Save</h2>
+          <p>Check the information carefully. Use Previous to make corrections before saving or submitting.</p>
+          <div id="reviewSummary" class="review-list"></div>
+          <p id="wizardMessage" class="message" role="status"></p>
+          <div class="actions no-print">
+            <button type="button" class="primary" onclick="saveRecord()">Save</button>
+            <button type="button" class="secondary" onclick="printRecord()">Print</button>
+            <button type="button" class="secondary" onclick="openShareModal()">Share</button>
+            <button type="button" class="success" onclick="submitRecord()">Submit</button>
+          </div>
+          <p class="small">In this demo, Save and Submit store a local browser record only.</p>
+        </section>
+        <div class="actions no-print" id="wizardNavigation">
+          <button type="button" id="previousButton" class="secondary" onclick="moveStep(-1)">Previous</button>
+          <button type="button" id="nextButton" class="primary" onclick="moveStep(1)">Next</button>
+        </div>
+      </form>
+      <section class="records no-print" style="margin-top:22px">
+        <h2>My Saved Reports</h2>
+        <p class="small">Records saved in this browser, for demonstration only.</p>
+        <div id="recordsList"></div>
+      </section>
+    </section>
+
+    <!-- PATIENTS -->
+    <section class="tab-panel hidden" id="tab-patients">
+      <div class="section-head"><h2>Electronic Patient Records (EPR)</h2></div>
+      <div class="toolbar"><input id="patientSearch" placeholder="Search by name or record number" oninput="renderPatients()"></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line);margin-bottom:14px">
+        <div class="grid">
+          <div class="field"><label>Patient ID / record number</label><input id="prId" placeholder="Auto if empty"></div>
+          <div class="field"><label>Full name *</label><input id="prName"></div>
+          <div class="field"><label>Age</label><input id="prAge" type="number" min="0"></div>
+          <div class="field"><label>Sex</label><select id="prSex"><option value="">Select</option><option>Female</option><option>Male</option><option>Other</option></select></div>
+          <div class="field"><label>Phone</label><input id="prPhone"></div>
+          <div class="field"><label>Blood group</label><input id="prBlood"></div>
+          <div class="field"><label>Allergies</label><input id="prAllergies"></div>
+          <div class="field"><label>Chronic conditions</label><input id="prChronic"></div>
+          <div class="field wide"><label>Medical history</label><textarea id="prHistory"></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="savePatient()">Save Patient</button><button class="secondary" onclick="clearPatientForm()">Clear</button></div>
+        <p id="patientMsg" class="message"></p>
+      </div>
+      <table><thead><tr><th>Record #</th><th>Name</th><th>Age/Sex</th><th>Phone</th><th>Blood</th><th>Allergies</th><th>Actions</th></tr></thead><tbody id="patientsTbody"></tbody></table>
+    </section>
+
+    <!-- APPOINTMENTS -->
+    <section class="tab-panel hidden" id="tab-appointments">
+      <div class="section-head"><h2>Appointment Booking</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient name *</label><input id="apPatient"></div>
+          <div class="field"><label>Doctor *</label><input id="apDoctor"></div>
+          <div class="field"><label>Date *</label><input id="apDate" type="date"></div>
+          <div class="field"><label>Time *</label><input id="apTime" type="time"></div>
+          <div class="field"><label>Department</label><input id="apDept"></div>
+          <div class="field"><label>Reason</label><input id="apReason"></div>
+          <div class="field"><label>Reminder phone</label><input id="apPhone" type="tel"></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveAppointment()">Book Appointment</button></div>
+      </div>
+      <table><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Dept</th><th>Status</th><th>Actions</th></tr></thead><tbody id="apTbody"></tbody></table>
+    </section>
+
+    <!-- QUEUE -->
+    <section class="tab-panel hidden" id="tab-queue">
+      <div class="section-head"><h2>Patient Queue Management</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient name *</label><input id="qName"></div>
+          <div class="field"><label>Department</label><input id="qDept"></div>
+          <div class="field"><label>Priority</label><select id="qPriority"><option>Normal</option><option>Urgent</option><option>Emergency</option></select></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="addToQueue()">Add to Queue</button></div>
+      </div>
+      <table><thead><tr><th>#</th><th>Patient</th><th>Dept</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead><tbody id="qTbody"></tbody></table>
+    </section>
+
+    <!-- PHARMACY -->
+    <section class="tab-panel hidden" id="tab-pharmacy">
+      <div class="section-head"><h2>Pharmacy &amp; Medicine Stock</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Medicine *</label><input id="phName"></div>
+          <div class="field"><label>Batch</label><input id="phBatch"></div>
+          <div class="field"><label>Quantity *</label><input id="phQty" type="number" min="0"></div>
+          <div class="field"><label>Expiry date</label><input id="phExp" type="date"></div>
+          <div class="field"><label>Unit price (RWF)</label><input id="phPrice" type="number" min="0"></div>
+          <div class="field"><label>Supplier</label><input id="phSupplier"></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveMedicine()">Add / Update Stock</button></div>
+      </div>
+      <table><thead><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Expiry</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody id="phTbody"></tbody></table>
+    </section>
+
+    <!-- LAB -->
+    <section class="tab-panel hidden" id="tab-lab">
+      <div class="section-head"><h2>Laboratory Management</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient *</label><input id="labPatient"></div>
+          <div class="field"><label>Test *</label><input id="labTest"></div>
+          <div class="field"><label>Sample ID</label><input id="labSample"></div>
+          <div class="field"><label>Priority</label><select id="labPriority"><option>Routine</option><option>Urgent</option></select></div>
+          <div class="field wide"><label>Result (once ready)</label><textarea id="labResult"></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveLabRequest()">Request Test</button></div>
+      </div>
+      <table><thead><tr><th>Patient</th><th>Test</th><th>Sample</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead><tbody id="labTbody"></tbody></table>
+    </section>
+
+    <!-- BILLING -->
+    <section class="tab-panel hidden" id="tab-billing">
+      <div class="section-head"><h2>Billing &amp; Invoices</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient *</label><input id="blPatient"></div>
+          <div class="field"><label>Service / item</label><input id="blItem"></div>
+          <div class="field"><label>Total (RWF) *</label><input id="blTotal" type="number" min="0" value="0"></div>
+          <div class="field"><label>Paid (RWF)</label><input id="blPaid" type="number" min="0" value="0"></div>
+          <div class="field"><label>Payment method</label><select id="blMethod"><option>Cash / self-pay</option><option>RSSB / community-based insurance</option><option>Private insurance</option><option>Other</option></select></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveBill()">Generate Invoice</button></div>
+      </div>
+      <table><thead><tr><th>Invoice #</th><th>Patient</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Actions</th></tr></thead><tbody id="blTbody"></tbody></table>
+    </section>
+
+    <!-- INSURANCE -->
+    <section class="tab-panel hidden" id="tab-insurance">
+      <div class="section-head"><h2>Insurance Claims</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient *</label><input id="icPatient"></div>
+          <div class="field"><label>Insurance / scheme *</label><input id="icScheme"></div>
+          <div class="field"><label>Policy / membership number *</label><input id="icPolicy"></div>
+          <div class="field"><label>Amount claimed (RWF)</label><input id="icAmount" type="number" min="0" value="0"></div>
+          <div class="field"><label>Status</label><select id="icStatus"><option>Draft</option><option>Submitted</option><option>Approved</option><option>Rejected</option><option>Paid</option></select></div>
+          <div class="field wide"><label>Notes</label><textarea id="icNotes"></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveClaim()">Save Claim</button></div>
+      </div>
+      <table><thead><tr><th>Patient</th><th>Scheme</th><th>Policy</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="icTbody"></tbody></table>
+    </section>
+
+    <!-- BEDS -->
+    <section class="tab-panel hidden" id="tab-beds">
+      <div class="section-head"><h2>Beds &amp; Ward Management</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Ward *</label><input id="bdWard"></div>
+          <div class="field"><label>Bed number *</label><input id="bdBed"></div>
+          <div class="field"><label>Status</label><select id="bdStatus"><option>Available</option><option>Occupied</option><option>Cleaning</option><option>Maintenance</option></select></div>
+          <div class="field"><label>Patient (if occupied)</label><input id="bdPatient"></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveBed()">Save Bed</button></div>
+      </div>
+      <div class="stats" id="bedStats"></div>
+      <table><thead><tr><th>Ward</th><th>Bed</th><th>Status</th><th>Patient</th><th>Actions</th></tr></thead><tbody id="bdTbody"></tbody></table>
+    </section>
+
+    <!-- STAFF -->
+    <section class="tab-panel hidden" id="tab-staff">
+      <div class="section-head"><h2>Staff &amp; Duty Roster</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Full name *</label><input id="stName"></div>
+          <div class="field"><label>Role / title *</label><input id="stRole"></div>
+          <div class="field"><label>Department</label><input id="stDept"></div>
+          <div class="field"><label>Phone</label><input id="stPhone" type="tel"></div>
+          <div class="field"><label>Email</label><input id="stEmail" type="email"></div>
+          <div class="field"><label>Shift</label><select id="stShift"><option>Day</option><option>Night</option><option>On-call</option><option>Off</option></select></div>
+          <div class="field"><label>Duty date</label><input id="stDate" type="date"></div>
+          <div class="field"><label>Leave notes</label><input id="stLeave"></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveStaff()">Save Staff</button></div>
+      </div>
+      <table><thead><tr><th>Name</th><th>Role</th><th>Dept</th><th>Shift</th><th>Date</th><th>Actions</th></tr></thead><tbody id="stTbody"></tbody></table>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="tab-panel hidden" id="tab-analytics">
+      <div class="section-head"><h2>Advanced Reports &amp; Analytics</h2>
+        <div class="toolbar">
+          <select id="anRange" onchange="renderAnalytics()">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last 365 days</option>
+          </select>
+          <button class="secondary" onclick="window.print()">Print</button>
+        </div>
+      </div>
+      <div class="stats" id="anStats"></div>
+      <div class="two-col">
+        <div class="card" style="box-shadow:none;border:1px solid var(--line)"><h3 style="margin-top:0">Visits by Status</h3><div id="anStatus"></div></div>
+        <div class="card" style="box-shadow:none;border:1px solid var(--line)"><h3 style="margin-top:0">Revenue summary</h3><div id="anRevenue"></div></div>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <section class="tab-panel hidden" id="tab-notifications">
+      <div class="section-head"><h2>Smart Notifications &amp; Alerts</h2>
+        <div class="toolbar"><button class="secondary" onclick="renderNotifications()">Refresh</button></div>
+      </div><div id="notifList"></div>
+    </section>
+
+    <!-- AUDIT -->
+    <section class="tab-panel hidden" id="tab-audit">
+      <div class="section-head"><h2>Audit Trail &amp; Activity Logs</h2>
+        <div class="toolbar"><input id="auditSearch" placeholder="Filter by user or action" oninput="renderAudit()"><button class="danger-btn" onclick="clearAudit()">Clear Log</button></div>
+      </div><div id="auditList"></div>
+    </section>
+
+    <!-- BACKUP -->
+    <section class="tab-panel hidden" id="tab-backup">
+      <div class="section-head"><h2>Automatic Backup &amp; Recovery</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <p>Export all current data (records, patients, staff, medicines, etc.) to a JSON file. Restore at any time.</p>
+        <div class="actions">
+          <button class="primary" onclick="downloadBackup()">⬇ Download Backup (.json)</button>
+          <button class="secondary" onclick="document.getElementById('restoreFile').click()">⬆ Restore from Backup</button>
+          <input id="restoreFile" type="file" accept="application/json" class="hidden" onchange="restoreBackup(event)">
+        </div>
+        <p class="small" id="backupInfo"></p>
+        <hr>
+        <p><strong>Auto-backup reminder:</strong> In a real deployment this would save to an encrypted server. Here you can export at any time.</p>
+      </div>
+    </section>
+
+    <!-- DOCUMENTS -->
+    <section class="tab-panel hidden" id="tab-documents">
+      <div class="section-head"><h2>Document &amp; Attachment Center</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Title *</label><input id="docTitle"></div>
+          <div class="field"><label>Patient / owner</label><input id="docOwner"></div>
+          <div class="field wide"><label>Notes</label><textarea id="docNotes"></textarea></div>
+          <div class="field wide"><label>Attach file (PDF / image / doc)</label><input id="docFile" type="file"></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveDocument()">Save Document</button></div>
+        <p class="small">Files are stored as base64 in this browser (demo only).</p>
+      </div>
+      <table><thead><tr><th>Title</th><th>Owner</th><th>Date</th><th>File</th><th>Actions</th></tr></thead><tbody id="docTbody"></tbody></table>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section class="tab-panel hidden" id="tab-feedback">
+      <div class="section-head"><h2>Patient Feedback &amp; Complaints</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient</label><input id="fbPatient"></div>
+          <div class="field"><label>Type</label><select id="fbType"><option>Compliment</option><option>Suggestion</option><option>Complaint</option></select></div>
+          <div class="field"><label>Severity</label><select id="fbSeverity"><option>Low</option><option>Medium</option><option>High</option></select></div>
+          <div class="field wide"><label>Message *</label><textarea id="fbMessage"></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveFeedback()">Submit</button></div>
+      </div>
+      <table><thead><tr><th>Patient</th><th>Type</th><th>Severity</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fbTbody"></tbody></table>
+    </section>
+
+    <!-- EMERGENCY -->
+    <section class="tab-panel hidden" id="tab-emergency">
+      <div class="section-head"><h2>Emergency &amp; Triage Tracking</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <div class="grid">
+          <div class="field"><label>Patient *</label><input id="emPatient"></div>
+          <div class="field"><label>Triage category *</label><select id="emTriage"><option>Red — Immediate</option><option>Orange — Very urgent</option><option>Yellow — Urgent</option><option>Green — Standard</option><option>Blue — Non-urgent</option></select></div>
+          <div class="field"><label>Arrival time</label><input id="emArrival" type="datetime-local"></div>
+          <div class="field"><label>Assessment time</label><input id="emAssess" type="datetime-local"></div>
+          <div class="field wide"><label>Complaint / notes</label><textarea id="emNotes"></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="saveEmergency()">Record Case</button></div>
+      </div>
+      <table><thead><tr><th>Patient</th><th>Triage</th><th>Arrival</th><th>Assessment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="emTbody"></tbody></table>
+    </section>
+
+    <!-- AI -->
+    <section class="tab-panel hidden" id="tab-ai">
+      <div class="section-head"><h2>AI Hospital Reporting Assistant</h2></div>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line)">
+        <p>Quick summaries and quality checks on your saved data. <em>This is a demo — it does not make clinical decisions.</em></p>
+        <div class="actions">
+          <button class="primary" onclick="aiDailySummary()">📝 Draft Daily Summary</button>
+          <button class="secondary" onclick="aiQualityCheck()">🔍 Check for Missing Data</button>
+          <button class="secondary" onclick="aiManagementReport()">📈 Management Report</button>
+        </div>
+        <div id="aiOutput" class="message" style="margin-top:14px;background:#f6fafd;border:1px solid var(--line);border-radius:10px;padding:14px;white-space:pre-wrap"></div>
+      </div>
+    </section>
+
+    <!-- USERS -->
+    <section class="tab-panel hidden" id="tab-users">
+      <div class="section-head"><h2>Users, Roles &amp; Access Control</h2></div>
+      <p class="small">Role-based access — each role only sees the modules allowed for it. Admin can see all.</p>
+      <table><thead><tr><th>User</th><th>Role</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead><tbody id="usersTbody"></tbody></table>
+      <div class="card" style="box-shadow:none;border:1px solid var(--line);margin-top:14px">
+        <h3 style="margin-top:0">Role permissions</h3>
+        <div id="rolesTable"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- SHARE MODAL -->
+<div id="shareModal" class="modal-overlay hidden no-print">
+  <div class="modal-box">
+    <h2>Share Report</h2>
+    <p class="small">Choose how you want to share this report.</p>
+    <button type="button" class="share-option" onclick="shareVia('whatsapp')">📱 Share via WhatsApp</button>
+    <button type="button" class="share-option" onclick="shareVia('email')">✉️ Share via Email</button>
+    <div class="actions"><button type="button" class="secondary" onclick="closeShareModal()">Cancel</button></div>
+  </div>
+</div>
+
+<!-- DIRECTOR MODAL -->
+<div id="directorModal" class="modal-overlay hidden no-print">
+  <div class="modal-box">
+    <h2>Director of Hospital Details</h2>
+    <p class="small">Enter the director's details. The report will be sent to them via WhatsApp and Email.</p>
+    <div class="field"><label for="directorNames">Director names *</label><input id="directorNames" required></div>
+    <div class="field"><label for="directorTitle">Title / position *</label><input id="directorTitle" required placeholder="e.g. Hospital Director"></div>
+    <div class="field"><label for="directorPhone">Telephone number *</label><input id="directorPhone" type="tel" required placeholder="+250 78X XXX XXX"></div>
+    <div class="field"><label for="directorWhatsapp">WhatsApp number *</label><input id="directorWhatsapp" type="tel" required placeholder="+250 78X XXX XXX"></div>
+    <div class="field"><label for="directorEmail">Email address *</label><input id="directorEmail" type="email" required placeholder="director@hospital.rw"></div>
+    <p id="directorMessage" class="message"></p>
+    <div class="actions">
+      <button type="button" class="secondary" onclick="closeDirectorModal()">Cancel</button>
+      <button type="button" class="primary" onclick="confirmDirectorSend()">Send Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   HOME PAGE SLIDESHOW — 5 SECOND LOOP
+   ============================================================ */
+(function startHomeSlideshow(){
+  var slides = document.querySelectorAll('#homeSlideshow .slide');
+  if (!slides.length) return;
+  var idx = 0;
+  slides[0].classList.add('active');
+  setInterval(function(){
+    slides[idx].classList.remove('active');
+    idx = (idx + 1) % slides.length;
+    slides[idx].classList.add('active');
+  }, 5000);
+})();
+
+/* ============================================================
+   SHARED HELPERS + STORAGE
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const KEYS = {
+  records:'emmy_hospital_demo_records_v1',
+  accounts:'emmy_hospital_demo_accounts_v1',
+  patients:'emmy_patients_v1',
+  appointments:'emmy_appointments_v1',
+  queue:'emmy_queue_v1',
+  meds:'emmy_meds_v1',
+  lab:'emmy_lab_v1',
+  bills:'emmy_bills_v1',
+  claims:'emmy_claims_v1',
+  beds:'emmy_beds_v1',
+  staff:'emmy_staff_v1',
+  audit:'emmy_audit_v1',
+  docs:'emmy_docs_v1',
+  feedback:'emmy_feedback_v1',
+  emergency:'emmy_emergency_v1'
+};
+const read = (key, fallback=[]) => { try { return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback)); } catch { return fallback; } };
+const write = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+const esc = v => String(v??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => d ? new Date(d).toLocaleString() : '';
+const today = () => new Date().toISOString().slice(0,10);
+
+let currentUser = null;
+let currentRole = 'admin';
+
+const ROLE_PERMS = {
+  admin:        ['dashboard','report','patients','appointments','queue','pharmacy','lab','billing','insurance','beds','staff','analytics','notifications','audit','backup','documents','feedback','emergency','ai','users'],
+  doctor:       ['dashboard','report','patients','appointments','queue','lab','beds','analytics','notifications','documents','emergency','ai'],
+  nurse:        ['dashboard','report','patients','queue','pharmacy','lab','beds','notifications','documents','emergency'],
+  receptionist: ['dashboard','report','patients','appointments','queue','billing','notifications','documents','feedback','emergency'],
+  pharmacist:   ['dashboard','pharmacy','notifications','documents'],
+  lab:          ['dashboard','lab','notifications','documents'],
+  accountant:   ['dashboard','billing','insurance','analytics','notifications','documents']
+};
+const ROLE_LABELS = {admin:'Hospital Director / Manager',doctor:'Doctor',nurse:'Nurse',receptionist:'Receptionist',pharmacist:'Pharmacist',lab:'Lab Technician',accountant:'Accountant'};
+
+function logAudit(action, detail) {
+  const log = read(KEYS.audit);
+  log.unshift({ id: uid(), user: currentUser || 'system', action, detail: detail||'', at: new Date().toISOString() });
+  write(KEYS.audit, log.slice(0, 500));
+}
+
+/* ==================== AUTH ==================== */
+function showAuth(mode) {
+  const register = mode === 'register';
+  $('loginForm').classList.toggle('hidden', register);
+  $('registerForm').classList.toggle('hidden', !register);
+  $('loginTab').className = register ? 'secondary' : 'primary';
+  $('registerTab').className = register ? 'primary' : 'secondary';
+}
+document.querySelectorAll('[data-toggle]').forEach(button => button.addEventListener('click', () => {
+  const input = $(button.dataset.toggle);
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  button.textContent = show ? 'Hide' : 'Show';
+}));
+
+async function hashPassword(password) {
+  if (!window.crypto?.subtle) throw new Error('Secure password hashing requires HTTPS or localhost.');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+$('registerForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username = $('regUsername').value.trim();
+  const email = $('regEmail').value.trim().toLowerCase();
+  const phone = $('regPhone').value.trim();
+  const role = $('regRole').value;
+  const password = $('regPassword').value, confirm = $('regConfirm').value;
+  const msg = $('registerMessage');
+  if (password !== confirm) { msg.textContent = 'Passwords do not match.'; return; }
+  const accounts = read(KEYS.accounts);
+  if (accounts.some(a => a.username.toLowerCase()===username.toLowerCase() || a.email===email || a.phone===phone)) {
+    msg.textContent = 'Username, email or phone already exists.'; return;
+  }
+  try {
+    accounts.push({ username, email, phone, role, passwordHash: await hashPassword(password) });
+    write(KEYS.accounts, accounts);
+    e.target.reset(); msg.textContent = 'Demo account created. Please log in.'; showAuth('login');
+  } catch (err) { msg.textContent = err.message; }
+});
+
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const identity = $('loginIdentity').value.trim().toLowerCase();
+  const password = $('loginPassword').value;
+  const msg = $('loginMessage');
+  try {
+    const hash = await hashPassword(password);
+    const account = read(KEYS.accounts).find(a =>
+      (a.username.toLowerCase()===identity || a.email===identity || a.phone.toLowerCase()===identity)
+      && a.passwordHash === hash);
+    if (!account) { msg.textContent = 'Account not found or password is incorrect.'; return; }
+    currentUser = account.username;
+    currentRole = account.role || 'admin';
+    sessionStorage.setItem('emmy_user', currentUser);
+    sessionStorage.setItem('emmy_role', currentRole);
+    logAudit('LOGIN', `User ${currentUser} (${currentRole}) logged in`);
+    bootApp();
+  } catch (err) { msg.textContent = err.message; }
+});
+
+function logout() {
+  logAudit('LOGOUT', `User ${currentUser} logged out`);
+  currentUser = null; currentRole = 'admin';
+  sessionStorage.removeItem('emmy_user'); sessionStorage.removeItem('emmy_role');
+  $('appScreen').classList.add('hidden');
+  $('authScreen').classList.remove('hidden');
+  $('loginForm').reset(); $('loginPassword').value = '';
+  showAuth('login');
+}
+
+/* ==================== BOOT ==================== */
+function bootApp() {
+  $('authScreen').classList.add('hidden');
+  $('appScreen').classList.remove('hidden');
+  $('roleTag').textContent = 'Role: ' + (ROLE_LABELS[currentRole] || currentRole);
+  applyRolePermissions();
+  buildSidebarEvents();
+  switchTab('dashboard');
+  newRecord();
+  renderAll();
+}
+function applyRolePermissions() {
+  const allowed = ROLE_PERMS[currentRole] || ROLE_PERMS.admin;
+  document.querySelectorAll('#sideNav button[data-tab]').forEach(btn => {
+    btn.classList.toggle('hidden', !allowed.includes(btn.dataset.tab));
+  });
+}
+function buildSidebarEvents() {
+  document.querySelectorAll('#sideNav button[data-tab]').forEach(btn => {
+    btn.onclick = () => switchTab(btn.dataset.tab);
+  });
+}
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+  const panel = $('tab-' + tab);
+  if (panel) panel.classList.remove('hidden');
+  document.querySelectorAll('#sideNav button[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  const titles = {
+    dashboard:'Dashboard', report:'Daily Report', patients:'Patient Records', appointments:'Appointments',
+    queue:'Patient Queue', pharmacy:'Pharmacy & Stock', lab:'Laboratory', billing:'Billing & Invoices',
+    insurance:'Insurance Claims', beds:'Beds & Wards', staff:'Staff & Roster', analytics:'Reports & Analytics',
+    notifications:'Notifications', audit:'Audit Trail', backup:'Backup & Recovery', documents:'Document Center',
+    feedback:'Feedback & Complaints', emergency:'Emergency & Triage', ai:'AI Assistant', users:'Users & Roles'
+  };
+  $('currentTabTitle').textContent = titles[tab] || tab;
+  renderAll();
+}
+function renderAll() {
+  renderRecords(); renderDashboard(); renderPatients(); renderAppointments(); renderQueue();
+  renderPharmacy(); renderLab(); renderBilling(); renderInsurance(); renderBeds(); renderStaff();
+  renderAnalytics(); renderNotifications(); renderAudit(); renderDocuments(); renderFeedback();
+  renderEmergency(); renderUsers(); renderRolesTable(); renderBackupInfo();
+}
+
+/* ==================== DAILY REPORT WIZARD ==================== */
+let currentStep = 0;
+let editingId = null;
+let savedBeforeSubmit = false;
+const steps = [...document.querySelectorAll('.step')];
+const stepNames = ['Patient Details','Medical Information','Outcome & Payment','Review & Save'];
+
+function localDateTime(){return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function newRecord(){
+  $('wizardForm').reset(); editingId = null; savedBeforeSubmit = false; currentStep = 0;
+  $('reportDate').value = new Date().toISOString().slice(0,10);
+  $('arrivalTime').value = localDateTime();
+  $('totalBill').value='0'; $('amountPaid').value='0';
+  $('wizardMessage').textContent = '';
+  renderStep();
+}
+function fieldValue(id){return $(id).value.trim()}
+function collectRecord(){
+  return {
+    id:editingId||uid(), createdBy:currentUser, updatedAt:new Date().toISOString(),
+    hospitalName:fieldValue('hospitalName'), hospitalAddress:fieldValue('hospitalAddress'), hospitalContact:fieldValue('hospitalContact'), reportDate:fieldValue('reportDate'),
+    patientName:fieldValue('patientName'), patientRecord:fieldValue('patientRecord'), patientAge:fieldValue('patientAge'), patientSex:fieldValue('patientSex'), patientAddress:fieldValue('patientAddress'), patientPhone:fieldValue('patientPhone'), arrivalTime:fieldValue('arrivalTime'), careUnit:fieldValue('careUnit'),
+    complaint:fieldValue('complaint'), diagnosis:fieldValue('diagnosis'), clinician:fieldValue('clinician'), treatmentTime:fieldValue('treatmentTime'), treatment:fieldValue('treatment'), medicines:fieldValue('medicines'), events:fieldValue('events'),
+    patientStatus:fieldValue('patientStatus'), departureTime:fieldValue('departureTime'), paymentMethod:fieldValue('paymentMethod'), insuranceNumber:fieldValue('insuranceNumber'), totalBill:Number(fieldValue('totalBill')||0), amountPaid:Number(fieldValue('amountPaid')||0), followUp:fieldValue('followUp'), submitted:false
+  };
+}
+const reviewFields=[
+  ['Hospital','hospitalName'],['Hospital address','hospitalAddress'],['Hospital contact','hospitalContact'],['Report date','reportDate'],
+  ['Patient full name','patientName'],['Patient record number','patientRecord'],['Age','patientAge'],['Sex','patientSex'],['Patient address','patientAddress'],['Patient / guardian phone','patientPhone'],['Arrival date and time','arrivalTime'],['Department / ward','careUnit'],
+  ['Illness / complaint','complaint'],['Diagnosis / assessment','diagnosis'],['Doctor / clinician','clinician'],['Treatment date and time','treatmentTime'],['Treatment / care','treatment'],['Medicine details','medicines'],['Other events / notes','events'],
+  ['Patient status','patientStatus'],['Discharge / referral time','departureTime'],['Payment method','paymentMethod'],['Insurance reference','insuranceNumber'],['Total bill (RWF)','totalBill'],['Amount paid (RWF)','amountPaid'],['Follow-up','followUp']
+];
+function renderReview(){
+  const data = collectRecord();
+  $('reviewSummary').innerHTML = reviewFields.map(([label,key]) =>
+    `<div class="review-row"><strong>${esc(label)}</strong><span>${esc(data[key]||'Not recorded')}</span></div>`).join('');
+}
+function renderStep(){
+  steps.forEach((step,i)=>step.classList.toggle('hidden',i!==currentStep));
+  $('stepLabel').textContent = `Step ${currentStep+1} of ${steps.length}`;
+  $('stepName').textContent = stepNames[currentStep];
+  $('stepProgress').value = currentStep+1;
+  $('previousButton').disabled = currentStep===0;
+  $('nextButton').classList.toggle('hidden', currentStep===steps.length-1);
+  $('wizardNavigation').classList.toggle('hidden', currentStep===steps.length-1);
+  if (currentStep===3) renderReview();
+}
+function moveStep(direction){
+  if (direction>0){
+    const visible = steps[currentStep];
+    for (const input of visible.querySelectorAll('input,select,textarea')) if (!input.reportValidity()) return;
+  }
+  currentStep = Math.max(0, Math.min(steps.length-1, currentStep+direction));
+  renderStep();
+}
+function saveRecord(){
+  const data = collectRecord();
+  if (!$('wizardForm').reportValidity()) return;
+  if (data.amountPaid > data.totalBill){ $('wizardMessage').textContent='Amount paid cannot be greater than the total bill.'; return; }
+  const records = read(KEYS.records);
+  const index = records.findIndex(r=>r.id===data.id);
+  if (index>=0){ data.submitted = records[index].submitted; records[index]=data; }
+  else records.unshift(data);
+  write(KEYS.records, records);
+  editingId = data.id; savedBeforeSubmit = true;
+  $('wizardMessage').textContent='Saved in this browser. You can still edit before submitting.';
+  logAudit('SAVE_REPORT', `Report for ${data.patientName || 'patient'} (${data.id.slice(0,8)})`);
+  renderRecords(); renderDashboard(); renderNotifications();
+}
+function printRecord(){
+  if (currentStep!==3){ $('wizardMessage').textContent='Open Review & Save before printing.'; return; }
+  renderReview(); window.print();
+}
+function buildReportText(record){
+  const f = v => (v===undefined||v===null||v==='') ? 'Not recorded' : v;
+  return [
+    '🏥 HOSPITAL DAILY REPORT','================================','',
+    'HOSPITAL INFORMATION','--------------------------------',
+    'Hospital: '+f(record.hospitalName),'Address: '+f(record.hospitalAddress),'Contact: '+f(record.hospitalContact),'Report date: '+f(record.reportDate),'',
+    'PATIENT DETAILS','--------------------------------',
+    'Full name: '+f(record.patientName),'Record number: '+f(record.patientRecord),'Age: '+f(record.patientAge),'Sex: '+f(record.patientSex),
+    'Address: '+f(record.patientAddress),'Phone: '+f(record.patientPhone),'Arrival: '+f(record.arrivalTime),'Department / ward: '+f(record.careUnit),'',
+    'MEDICAL INFORMATION','--------------------------------',
+    'Complaint: '+f(record.complaint),'Diagnosis: '+f(record.diagnosis),'Clinician: '+f(record.clinician),'Treatment time: '+f(record.treatmentTime),
+    'Treatment: '+f(record.treatment),'Medicines: '+f(record.medicines),'Other events: '+f(record.events),'',
+    'OUTCOME & PAYMENT','--------------------------------',
+    'Status: '+f(record.patientStatus),'Departure: '+f(record.departureTime),'Payment method: '+f(record.paymentMethod),
+    'Insurance ref: '+f(record.insuranceNumber),'Total bill: '+(record.totalBill||0)+' RWF','Amount paid: '+(record.amountPaid||0)+' RWF','Follow-up: '+f(record.followUp)
+  ].join('\n');
+}
+function openShareModal(){
+  if (currentStep!==3){ $('wizardMessage').textContent='Open Review & Save before sharing.'; return; }
+  $('shareModal').classList.remove('hidden');
+}
+function closeShareModal(){ $('shareModal').classList.add('hidden'); }
+function shareVia(method){
+  const data = collectRecord();
+  const text = buildReportText(data);
+  const subject = 'Hospital Daily Report - ' + (data.patientName||'Patient') + ' - ' + (data.reportDate||'');
+  if (method==='whatsapp') window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  else if (method==='email') window.location.href = 'mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text);
+  logAudit('SHARE_REPORT', `Shared report via ${method}`);
+  closeShareModal();
+}
+let pendingSubmitRecord = null;
+function submitRecord(){
+  const data = collectRecord();
+  if (!read(KEYS.records).some(r=>r.id===data.id)){ $('wizardMessage').textContent='Please Save the report first, then Submit.'; return; }
+  pendingSubmitRecord = data;
+  $('directorMessage').textContent = '';
+  const existing = read(KEYS.records).find(r=>r.id===data.id);
+  const d = (existing && existing.director) ? existing.director : {};
+  $('directorNames').value = d.names||''; $('directorTitle').value = d.title||'';
+  $('directorPhone').value = d.phone||''; $('directorWhatsapp').value = d.whatsapp||'';
+  $('directorEmail').value = d.email||'';
+  $('directorModal').classList.remove('hidden');
+}
+function closeDirectorModal(){ $('directorModal').classList.add('hidden'); pendingSubmitRecord = null; }
+function confirmDirectorSend(){
+  const names = $('directorNames').value.trim();
+  const title = $('directorTitle').value.trim();
+  const phone = $('directorPhone').value.trim();
+  const whatsapp = $('directorWhatsapp').value.trim();
+  const email = $('directorEmail').value.trim();
+  if (!names || !title || !phone || !whatsapp || !email){ $('directorMessage').textContent='Please fill in all director details.'; return; }
+  const data = pendingSubmitRecord;
+  if (!data){ $('directorMessage').textContent='No report selected.'; return; }
+  const records = read(KEYS.records);
+  const index = records.findIndex(r=>r.id===data.id);
+  data.submitted = true;
+  data.director = { names, title, phone, whatsapp, email };
+  data.updatedAt = new Date().toISOString();
+  if (index>=0) records[index] = data; else records.unshift(data);
+  write(KEYS.records, records);
+  editingId = data.id;
+  logAudit('SUBMIT_REPORT', `Report submitted to director ${names} (${email})`);
+  const text = buildReportText(data) + '\n\nDIRECTOR OF HOSPITAL\n--------------------------------\nNames: '+names+'\nTitle: '+title+'\nTelephone: '+phone+'\nWhatsApp: '+whatsapp+'\nEmail: '+email;
+  const subject = 'Hospital Daily Report - ' + (data.patientName||'Patient') + ' - ' + (data.reportDate||'');
+  const waNumber = whatsapp.replace(/[^\d]/g,'');
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(text),'_blank');
+  setTimeout(() => {
+    window.location.href = 'mailto:'+encodeURIComponent(email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text);
+  }, 900);
+  closeDirectorModal();
+  $('wizardMessage').textContent='Report submitted. WhatsApp and Email have been opened to send to the director.';
+  renderRecords(); renderDashboard();
+}
+function renderRecords(){
+  const list = $('recordsList');
+  const records = read(KEYS.records).filter(r=>r.createdBy===currentUser);
+  if (!records.length){ list.innerHTML='<p class="small">No saved reports yet.</p>'; return; }
+  list.innerHTML = records.map(r=>`<div class="record-item"><div><strong>${esc(r.patientName||'Unnamed patient')}</strong><p>${esc(r.reportDate||'')} · ${esc(r.patientStatus||'Status not set')} · ${r.submitted?'Submitted':'Draft'}</p></div><div class="actions" style="margin:0"><button class="secondary" type="button" onclick="editRecord('${r.id}')">Open / Edit</button><button class="secondary" type="button" onclick="printSaved('${r.id}')">Print</button></div></div>`).join('');
+}
+function editRecord(id){
+  const record = read(KEYS.records).find(r=>r.id===id && r.createdBy===currentUser);
+  if (!record) return;
+  editingId=id; currentStep=0; savedBeforeSubmit=true;
+  reviewFields.map(x=>x[1]).forEach(key => { if ($(key)) $(key).value = record[key] ?? ''; });
+  $('wizardMessage').textContent='Editing saved report. Save again after making changes.';
+  switchTab('report'); renderStep(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function printSaved(id){
+  const record = read(KEYS.records).find(r=>r.id===id && r.createdBy===currentUser);
+  if (!record) return;
+  editRecord(id); currentStep=3; renderStep(); window.print();
+}
+
+/* ==================== DASHBOARD ==================== */
+function renderDashboard(){
+  const records = read(KEYS.records);
+  const todays = records.filter(r => (r.reportDate||'').startsWith(today()));
+  const beds = read(KEYS.beds);
+  const revenue = records.reduce((s,r)=>s+(Number(r.amountPaid)||0),0);
+  const pending = records.filter(r=>!r.submitted).length;
+  $('dashboardStats').innerHTML = [
+    ['Patients today', todays.length],
+    ['Total reports', records.length],
+    ['Currently admitted', records.filter(r=>r.patientStatus==='Admitted').length],
+    ['Discharged', records.filter(r=>r.patientStatus==='Discharged').length],
+    ['Available beds', beds.filter(b=>b.status==='Available').length],
+    ['Occupied beds', beds.filter(b=>b.status==='Occupied').length],
+    ['Revenue collected (RWF)', revenue.toLocaleString()],
+    ['Pending submissions', pending]
+  ].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  const log = read(KEYS.audit).slice(0,6);
+  $('dashboardActivity').innerHTML = log.length
+    ? log.map(l=>`<div class="audit-line">${esc(fmtDate(l.at))} — <strong>${esc(l.user)}</strong> ${esc(l.action)} ${esc(l.detail)}</div>`).join('')
+    : '<p class="small">No activity yet.</p>';
+  const alerts = buildAlerts();
+  $('dashboardAlerts').innerHTML = alerts.length
+    ? alerts.slice(0,6).map(a=>`<div class="notif ${a.level==='red'?'red':''}">${esc(a.text)}</div>`).join('')
+    : '<p class="small">No alerts.</p>';
+}
+function buildAlerts(){
+  const alerts = [];
+  read(KEYS.meds).forEach(m => {
+    if (Number(m.qty) <= 5) alerts.push({level:'red', text:`Low stock: ${m.name} (qty ${m.qty})`});
+    if (m.expiry && new Date(m.expiry) < new Date()) alerts.push({level:'red', text:`Expired: ${m.name} (exp ${m.expiry})`});
+  });
+  read(KEYS.records).forEach(r => { if (!r.submitted) alerts.push({level:'amber', text:`Draft report not submitted: ${r.patientName||'patient'}`}); });
+  read(KEYS.emergency).forEach(e => { if (e.triage && e.triage.startsWith('Red')) alerts.push({level:'red', text:`Emergency RED case: ${e.patient}`}); });
+  read(KEYS.claims).forEach(c => { if (c.status==='Rejected') alerts.push({level:'amber', text:`Claim rejected: ${c.patient} (${c.scheme})`}); });
+  read(KEYS.feedback).forEach(f => { if (f.type==='Complaint' && f.severity==='High' && f.status!=='Resolved') alerts.push({level:'red', text:`High-severity complaint: ${f.patient||'anonymous'}`}); });
+  return alerts;
+}
+
+/* ==================== PATIENTS ==================== */
+let editingPatientId = null;
+function savePatient(){
+  const name = $('prName').value.trim();
+  if (!name){ $('patientMsg').textContent='Patient name is required.'; return; }
+  const list = read(KEYS.patients);
+  const rec = { id: editingPatientId || $('prId').value.trim() || uid(), name, age:$('prAge').value, sex:$('prSex').value, phone:$('prPhone').value.trim(), blood:$('prBlood').value.trim(), allergies:$('prAllergies').value.trim(), chronic:$('prChronic').value.trim(), history:$('prHistory').value.trim(), updatedAt:new Date().toISOString() };
+  const i = list.findIndex(p=>p.id===rec.id);
+  if (i>=0) list[i]=rec; else list.unshift(rec);
+  write(KEYS.patients, list);
+  logAudit(i>=0?'UPDATE_PATIENT':'CREATE_PATIENT', `${rec.name} (${rec.id.slice(0,8)})`);
+  clearPatientForm(); $('patientMsg').textContent='Patient saved.'; renderPatients();
+}
+function clearPatientForm(){
+  ['prId','prName','prAge','prSex','prPhone','prBlood','prAllergies','prChronic','prHistory'].forEach(id=>$(id).value='');
+  editingPatientId = null;
+}
+function editPatient(id){
+  const p = read(KEYS.patients).find(x=>x.id===id); if (!p) return;
+  editingPatientId = p.id;
+  $('prId').value=p.id; $('prName').value=p.name||''; $('prAge').value=p.age||''; $('prSex').value=p.sex||'';
+  $('prPhone').value=p.phone||''; $('prBlood').value=p.blood||''; $('prAllergies').value=p.allergies||'';
+  $('prChronic').value=p.chronic||''; $('prHistory').value=p.history||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deletePatient(id){
+  if (!confirm('Delete this patient record?')) return;
+  write(KEYS.patients, read(KEYS.patients).filter(p=>p.id!==id));
+  logAudit('DELETE_PATIENT', id); renderPatients();
+}
+function renderPatients(){
+  const q = ($('patientSearch')?.value||'').toLowerCase();
+  const rows = read(KEYS.patients).filter(p => !q || (p.name||'').toLowerCase().includes(q) || (p.id||'').toLowerCase().includes(q));
+  $('patientsTbody').innerHTML = rows.length ? rows.map(p=>`<tr>
+    <td>${esc(p.id.slice(0,8))}</td><td>${esc(p.name)}</td><td>${esc(p.age||'')} / ${esc(p.sex||'')}</td>
+    <td>${esc(p.phone||'')}</td><td>${esc(p.blood||'')}</td><td>${esc(p.allergies||'')}</td>
+    <td><button class="secondary" onclick="editPatient('${p.id}')">Edit</button> <button class="danger-btn" onclick="deletePatient('${p.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="7" class="small">No patients found.</td></tr>';
+}
+
+/* ==================== APPOINTMENTS ==================== */
+function saveAppointment(){
+  const patient=$('apPatient').value.trim(), doctor=$('apDoctor').value.trim(), date=$('apDate').value, time=$('apTime').value;
+  if (!patient||!doctor||!date||!time){ alert('Patient, doctor, date and time are required.'); return; }
+  const list = read(KEYS.appointments);
+  list.unshift({ id:uid(), patient, doctor, date, time, dept:$('apDept').value.trim(), reason:$('apReason').value.trim(), phone:$('apPhone').value.trim(), status:'Scheduled', createdBy:currentUser, at:new Date().toISOString() });
+  write(KEYS.appointments, list);
+  logAudit('CREATE_APPOINTMENT', `${patient} with ${doctor} on ${date} ${time}`);
+  ['apPatient','apDoctor','apDate','apTime','apDept','apReason','apPhone'].forEach(id=>$(id).value='');
+  renderAppointments(); renderNotifications();
+}
+function setAppointmentStatus(id,status){
+  const list=read(KEYS.appointments); const a=list.find(x=>x.id===id); if(!a)return;
+  a.status=status; write(KEYS.appointments,list); logAudit('APPT_STATUS', `${id} → ${status}`); renderAppointments();
+}
+function deleteAppointment(id){ if(!confirm('Delete appointment?'))return; write(KEYS.appointments, read(KEYS.appointments).filter(x=>x.id!==id)); logAudit('DELETE_APPOINTMENT', id); renderAppointments(); }
+function renderAppointments(){
+  const list = read(KEYS.appointments);
+  $('apTbody').innerHTML = list.length ? list.map(a=>`<tr>
+    <td>${esc(a.patient)}</td><td>${esc(a.doctor)}</td><td>${esc(a.date)}</td><td>${esc(a.time)}</td><td>${esc(a.dept||'')}</td>
+    <td><span class="badge ${a.status==='Scheduled'?'blue':a.status==='Completed'?'green':'amber'}">${esc(a.status)}</span></td>
+    <td><button class="secondary" onclick="setAppointmentStatus('${a.id}','Completed')">✓</button> <button class="danger-btn" onclick="deleteAppointment('${a.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="7" class="small">No appointments.</td></tr>';
+}
+
+/* ==================== QUEUE ==================== */
+function addToQueue(){
+  const name = $('qName').value.trim(); if(!name){alert('Patient name required');return;}
+  const list = read(KEYS.queue);
+  list.push({ id:uid(), name, dept:$('qDept').value.trim(), priority:$('qPriority').value, status:'Waiting', at:new Date().toISOString() });
+  write(KEYS.queue, list);
+  logAudit('QUEUE_ADD', `${name} (${$('qPriority').value})`);
+  $('qName').value=''; $('qDept').value='';
+  renderQueue(); renderNotifications();
+}
+function setQueueStatus(id,status){
+  const list = read(KEYS.queue); const q = list.find(x=>x.id===id); if(!q)return;
+  q.status = status; write(KEYS.queue, list);
+  logAudit('QUEUE_STATUS', `${q.name} → ${status}`); renderQueue();
+}
+function removeFromQueue(id){ write(KEYS.queue, read(KEYS.queue).filter(x=>x.id!==id)); renderQueue(); }
+function renderQueue(){
+  const list = read(KEYS.queue).slice().sort((a,b) => {
+    const pr = {Emergency:0,Urgent:1,Normal:2};
+    return (pr[a.priority]??3) - (pr[b.priority]??3) || (a.at > b.at ? 1 : -1);
+  });
+  $('qTbody').innerHTML = list.length ? list.map((q,i)=>`<tr>
+    <td>${i+1}</td><td>${esc(q.name)}</td><td>${esc(q.dept||'')}</td>
+    <td><span class="badge ${q.priority==='Emergency'?'red':q.priority==='Urgent'?'amber':'blue'}">${esc(q.priority)}</span></td>
+    <td><span class="badge ${q.status==='Waiting'?'amber':q.status==='In service'?'blue':'green'}">${esc(q.status)}</span></td>
+    <td><button class="secondary" onclick="setQueueStatus('${q.id}','In service')">Start</button> <button class="secondary" onclick="setQueueStatus('${q.id}','Done')">Done</button> <button class="danger-btn" onclick="removeFromQueue('${q.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" class="small">Queue empty.</td></tr>';
+}
+
+/* ==================== PHARMACY ==================== */
+let editingMedId=null;
+function saveMedicine(){
+  const name=$('phName').value.trim(), qty=Number($('phQty').value||0);
+  if (!name){alert('Medicine name required');return;}
+  const list = read(KEYS.meds);
+  const rec = { id:editingMedId||uid(), name, batch:$('phBatch').value.trim(), qty, expiry:$('phExp').value, price:Number($('phPrice').value||0), supplier:$('phSupplier').value.trim(), updatedAt:new Date().toISOString() };
+  const i = list.findIndex(m=>m.id===rec.id);
+  if (i>=0) list[i]=rec; else list.unshift(rec);
+  write(KEYS.meds, list);
+  logAudit(i>=0?'MED_UPDATE':'MED_ADD', `${name} qty=${qty}`);
+  editingMedId=null;
+  ['phName','phBatch','phQty','phExp','phPrice','phSupplier'].forEach(id=>$(id).value='');
+  renderPharmacy(); renderNotifications();
+}
+function editMed(id){
+  const m = read(KEYS.meds).find(x=>x.id===id); if(!m)return;
+  editingMedId=m.id;
+  $('phName').value=m.name||''; $('phBatch').value=m.batch||''; $('phQty').value=m.qty||0;
+  $('phExp').value=m.expiry||''; $('phPrice').value=m.price||0; $('phSupplier').value=m.supplier||'';
+}
+function deleteMed(id){ if(!confirm('Delete medicine?'))return; write(KEYS.meds, read(KEYS.meds).filter(x=>x.id!==id)); logAudit('MED_DELETE', id); renderPharmacy(); }
+function renderPharmacy(){
+  const list = read(KEYS.meds);
+  $('phTbody').innerHTML = list.length ? list.map(m=>{
+    const expired = m.expiry && new Date(m.expiry) < new Date();
+    const low = Number(m.qty) <= 5;
+    const status = expired ? '<span class="badge red">Expired</span>' : low ? '<span class="badge amber">Low</span>' : '<span class="badge green">OK</span>';
+    return `<tr><td>${esc(m.name)}</td><td>${esc(m.batch||'')}</td><td>${m.qty}</td><td>${esc(m.expiry||'')}</td><td>${m.price}</td><td>${status}</td>
+      <td><button class="secondary" onclick="editMed('${m.id}')">Edit</button> <button class="danger-btn" onclick="deleteMed('${m.id}')">Del</button></td></tr>`;
+  }).join('') : '<tr><td colspan="7" class="small">No medicines yet.</td></tr>';
+}
+
+/* ==================== LAB ==================== */
+function saveLabRequest(){
+  const patient=$('labPatient').value.trim(), test=$('labTest').value.trim();
+  if (!patient||!test){alert('Patient and test are required');return;}
+  const list = read(KEYS.lab);
+  list.unshift({ id:uid(), patient, test, sample:$('labSample').value.trim(), priority:$('labPriority').value, result:$('labResult').value.trim(), status:'Requested', at:new Date().toISOString() });
+  write(KEYS.lab, list);
+  logAudit('LAB_REQUEST', `${test} for ${patient}`);
+  ['labPatient','labTest','labSample','labResult'].forEach(id=>$(id).value='');
+  renderLab(); renderNotifications();
+}
+function setLabStatus(id,status){
+  const list=read(KEYS.lab); const l=list.find(x=>x.id===id); if(!l)return;
+  l.status=status; write(KEYS.lab,list); logAudit('LAB_STATUS', `${l.test} → ${status}`); renderLab();
+}
+function deleteLab(id){ if(!confirm('Delete test?'))return; write(KEYS.lab, read(KEYS.lab).filter(x=>x.id!==id)); renderLab(); }
+function renderLab(){
+  const list = read(KEYS.lab);
+  $('labTbody').innerHTML = list.length ? list.map(l=>`<tr>
+    <td>${esc(l.patient)}</td><td>${esc(l.test)}</td><td>${esc(l.sample||'')}</td><td>${esc(l.priority)}</td>
+    <td><span class="badge ${l.status==='Completed'?'green':l.status==='Verified'?'blue':'amber'}">${esc(l.status)}</span></td>
+    <td><button class="secondary" onclick="setLabStatus('${l.id}','Completed')">✓ Done</button> <button class="secondary" onclick="setLabStatus('${l.id}','Verified')">Verify</button> <button class="danger-btn" onclick="deleteLab('${l.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" class="small">No lab requests.</td></tr>';
+}
+
+/* ==================== BILLING ==================== */
+function saveBill(){
+  const patient=$('blPatient').value.trim(), total=Number($('blTotal').value||0), paid=Number($('blPaid').value||0);
+  if (!patient){alert('Patient required');return;}
+  if (paid > total){alert('Paid cannot exceed total.');return;}
+  const list = read(KEYS.bills);
+  list.unshift({ id:'INV-'+String(list.length+1).padStart(4,'0'), patient, item:$('blItem').value.trim(), total, paid, method:$('blMethod').value, at:new Date().toISOString() });
+  write(KEYS.bills, list);
+  logAudit('BILL_CREATE', `${patient} total=${total} paid=${paid}`);
+  ['blPatient','blItem','blTotal','blPaid'].forEach(id=>$(id).value=id.includes('Total')||id.includes('Paid')?'0':'');
+  renderBilling();
+}
+function deleteBill(id){ if(!confirm('Delete invoice?'))return; write(KEYS.bills, read(KEYS.bills).filter(x=>x.id!==id)); renderBilling(); }
+function renderBilling(){
+  const list = read(KEYS.bills);
+  $('blTbody').innerHTML = list.length ? list.map(b=>`<tr>
+    <td>${esc(b.id)}</td><td>${esc(b.patient)}</td><td>${esc(b.item||'')}</td><td>${b.total}</td><td>${b.paid}</td><td>${b.total-b.paid}</td>
+    <td><button class="secondary" onclick="window.print()">Print</button> <button class="danger-btn" onclick="deleteBill('${b.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="7" class="small">No invoices.</td></tr>';
+}
+
+/* ==================== INSURANCE ==================== */
+function saveClaim(){
+  const patient=$('icPatient').value.trim(), scheme=$('icScheme').value.trim(), policy=$('icPolicy').value.trim();
+  if (!patient||!scheme||!policy){alert('Patient, scheme and policy number required');return;}
+  const list = read(KEYS.claims);
+  list.unshift({ id:uid(), patient, scheme, policy, amount:Number($('icAmount').value||0), status:$('icStatus').value, notes:$('icNotes').value.trim(), at:new Date().toISOString() });
+  write(KEYS.claims, list);
+  logAudit('CLAIM_SAVE', `${patient} (${scheme})`);
+  ['icPatient','icScheme','icPolicy','icAmount','icNotes'].forEach(id=>$(id).value=id==='icAmount'?'0':'');
+  renderInsurance(); renderNotifications();
+}
+function setClaimStatus(id,status){ const list=read(KEYS.claims); const c=list.find(x=>x.id===id); if(!c)return; c.status=status; write(KEYS.claims,list); logAudit('CLAIM_STATUS', `${c.patient} → ${status}`); renderInsurance(); }
+function deleteClaim(id){ if(!confirm('Delete claim?'))return; write(KEYS.claims, read(KEYS.claims).filter(x=>x.id!==id)); renderInsurance(); }
+function renderInsurance(){
+  const list = read(KEYS.claims);
+  $('icTbody').innerHTML = list.length ? list.map(c=>`<tr>
+    <td>${esc(c.patient)}</td><td>${esc(c.scheme)}</td><td>${esc(c.policy)}</td><td>${c.amount}</td>
+    <td><span class="badge ${c.status==='Paid'?'green':c.status==='Rejected'?'red':'amber'}">${esc(c.status)}</span></td>
+    <td><button class="secondary" onclick="setClaimStatus('${c.id}','Approved')">Approve</button> <button class="secondary" onclick="setClaimStatus('${c.id}','Paid')">Paid</button> <button class="danger-btn" onclick="deleteClaim('${c.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" class="small">No claims.</td></tr>';
+}
+
+/* ==================== BEDS ==================== */
+function saveBed(){
+  const ward=$('bdWard').value.trim(), bed=$('bdBed').value.trim();
+  if (!ward||!bed){alert('Ward and bed number required');return;}
+  const list = read(KEYS.beds);
+  const existing = list.find(b=>b.ward===ward && b.bed===bed);
+  const rec = { id: existing?existing.id:uid(), ward, bed, status:$('bdStatus').value, patient:$('bdPatient').value.trim(), at:new Date().toISOString() };
+  if (existing) Object.assign(existing, rec); else list.unshift(rec);
+  write(KEYS.beds, list);
+  logAudit(existing?'BED_UPDATE':'BED_ADD', `${ward} ${bed} → ${rec.status}`);
+  ['bdWard','bdBed','bdPatient'].forEach(id=>$(id).value='');
+  renderBeds(); renderDashboard();
+}
+function deleteBed(id){ if(!confirm('Delete bed?'))return; write(KEYS.beds, read(KEYS.beds).filter(x=>x.id!==id)); renderBeds(); renderDashboard(); }
+function renderBeds(){
+  const list = read(KEYS.beds);
+  const avail = list.filter(b=>b.status==='Available').length;
+  const occ = list.filter(b=>b.status==='Occupied').length;
+  const clean = list.filter(b=>b.status==='Cleaning').length;
+  $('bedStats').innerHTML = [
+    ['Total beds', list.length], ['Available', avail], ['Occupied', occ], ['Cleaning', clean]
+  ].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('bdTbody').innerHTML = list.length ? list.map(b=>`<tr>
+    <td>${esc(b.ward)}</td><td>${esc(b.bed)}</td>
+    <td><span class="badge ${b.status==='Available'?'green':b.status==='Occupied'?'red':'amber'}">${esc(b.status)}</span></td>
+    <td>${esc(b.patient||'')}</td>
+    <td><button class="danger-btn" onclick="deleteBed('${b.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="5" class="small">No beds recorded.</td></tr>';
+}
+
+/* ==================== STAFF ==================== */
+function saveStaff(){
+  const name=$('stName').value.trim(), role=$('stRole').value.trim();
+  if (!name||!role){alert('Name and role required');return;}
+  const list = read(KEYS.staff);
+  list.unshift({ id:uid(), name, role, dept:$('stDept').value.trim(), phone:$('stPhone').value.trim(), email:$('stEmail').value.trim(), shift:$('stShift').value, date:$('stDate').value, leave:$('stLeave').value.trim(), at:new Date().toISOString() });
+  write(KEYS.staff, list);
+  logAudit('STAFF_ADD', `${name} (${role}, ${$('stShift').value})`);
+  ['stName','stRole','stDept','stPhone','stEmail','stDate','stLeave'].forEach(id=>$(id).value='');
+  renderStaff();
+}
+function deleteStaff(id){ if(!confirm('Remove staff member?'))return; write(KEYS.staff, read(KEYS.staff).filter(x=>x.id!==id)); renderStaff(); }
+function renderStaff(){
+  const list = read(KEYS.staff);
+  $('stTbody').innerHTML = list.length ? list.map(s=>`<tr>
+    <td>${esc(s.name)}</td><td>${esc(s.role)}</td><td>${esc(s.dept||'')}</td><td>${esc(s.shift)}</td><td>${esc(s.date||'')}</td>
+    <td><button class="danger-btn" onclick="deleteStaff('${s.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" class="small">No staff.</td></tr>';
+}
+
+/* ==================== ANALYTICS ==================== */
+function renderAnalytics(){
+  const range = Number($('anRange')?.value||30);
+  const cutoff = new Date(Date.now() - range*86400000);
+  const records = read(KEYS.records).filter(r => r.reportDate && new Date(r.reportDate) >= cutoff);
+  const statusCount = {};
+  records.forEach(r => { statusCount[r.patientStatus||'Unknown'] = (statusCount[r.patientStatus||'Unknown']||0)+1; });
+  const revenue = records.reduce((s,r)=>s+(Number(r.amountPaid)||0),0);
+  const billed = records.reduce((s,r)=>s+(Number(r.totalBill)||0),0);
+  $('anStats').innerHTML = [
+    ['Reports in range', records.length],
+    ['Unique statuses', Object.keys(statusCount).length],
+    ['Total billed (RWF)', billed.toLocaleString()],
+    ['Total collected (RWF)', revenue.toLocaleString()],
+    ['Outstanding (RWF)', (billed-revenue).toLocaleString()]
+  ].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('anStatus').innerHTML = Object.keys(statusCount).length
+    ? Object.entries(statusCount).map(([k,v])=>`<div style="margin:6px 0"><strong>${esc(k)}</strong> — ${v}<div style="background:#e8f0f7;border-radius:6px;height:8px;margin-top:4px"><div style="background:var(--blue);height:8px;border-radius:6px;width:${Math.min(100, v/Math.max(1,records.length)*100)}%"></div></div></div>`).join('')
+    : '<p class="small">No data in selected range.</p>';
+  $('anRevenue').innerHTML = `<p><strong>Billed:</strong> ${billed.toLocaleString()} RWF</p><p><strong>Collected:</strong> ${revenue.toLocaleString()} RWF</p><p><strong>Outstanding:</strong> ${(billed-revenue).toLocaleString()} RWF</p>`;
+}
+
+/* ==================== NOTIFICATIONS ==================== */
+function renderNotifications(){
+  const alerts = buildAlerts();
+  $('notifList').innerHTML = alerts.length
+    ? alerts.map(a=>`<div class="notif ${a.level==='red'?'red':''}">${esc(a.text)}</div>`).join('')
+    : '<p class="small">No notifications. Everything looks good.</p>';
+}
+
+/* ==================== AUDIT ==================== */
+function renderAudit(){
+  const q = ($('auditSearch')?.value||'').toLowerCase();
+  const log = read(KEYS.audit).filter(l => !q || (l.user||'').toLowerCase().includes(q) || (l.action||'').toLowerCase().includes(q) || (l.detail||'').toLowerCase().includes(q));
+  $('auditList').innerHTML = log.length
+    ? log.slice(0,300).map(l=>`<div class="audit-line">${esc(fmtDate(l.at))} — <strong>${esc(l.user)}</strong> [${esc(l.action)}] ${esc(l.detail)}</div>`).join('')
+    : '<p class="small">No audit entries.</p>';
+}
+function clearAudit(){ if(!confirm('Clear audit log?'))return; write(KEYS.audit, []); renderAudit(); }
+
+/* ==================== BACKUP ==================== */
+function renderBackupInfo(){
+  const size = Object.values(KEYS).reduce((s,k)=>s+((localStorage.getItem(k)||'').length),0);
+  $('backupInfo').textContent = `Approximate data size: ${(size/1024).toFixed(2)} KB. Last export: never (in this session).`;
+}
+function downloadBackup(){
+  const blob = {};
+  Object.entries(KEYS).forEach(([k,key]) => { blob[k] = read(key); });
+  const data = { exportedAt:new Date().toISOString(), user:currentUser, data:blob };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  const a = document.createElement('a');
+  a.href = url; a.download = 'emmy_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+  logAudit('BACKUP_EXPORT', 'Full data backup downloaded'); renderBackupInfo();
+}
+function restoreBackup(e){
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed || !parsed.data) throw new Error('Invalid backup file.');
+      if (!confirm('This will overwrite current data. Continue?')) return;
+      Object.entries(parsed.data).forEach(([k,val]) => { if (KEYS[k]) write(KEYS[k], val); });
+      logAudit('BACKUP_RESTORE', 'Data restored from backup');
+      alert('Restore complete.'); renderAll();
+    } catch (err) { alert('Restore failed: '+err.message); }
+  };
+  reader.readAsText(file);
+}
+
+/* ==================== DOCUMENTS ==================== */
+function saveDocument(){
+  const title = $('docTitle').value.trim(); if(!title){alert('Title required');return;}
+  const fileInput = $('docFile'); const file = fileInput.files[0];
+  const finish = (dataUrl, fileName) => {
+    const list = read(KEYS.docs);
+    list.unshift({ id:uid(), title, owner:$('docOwner').value.trim(), notes:$('docNotes').value.trim(), fileName:fileName||'', data:dataUrl||'', at:new Date().toISOString() });
+    write(KEYS.docs, list);
+    logAudit('DOC_ADD', title);
+    ['docTitle','docOwner','docNotes'].forEach(id=>$(id).value=''); fileInput.value='';
+    renderDocuments();
+  };
+  if (!file) { finish('', ''); return; }
+  const reader = new FileReader();
+  reader.onload = () => finish(reader.result, file.name);
+  reader.readAsDataURL(file);
+}
+function deleteDoc(id){ if(!confirm('Delete document?'))return; write(KEYS.docs, read(KEYS.docs).filter(x=>x.id!==id)); renderDocuments(); }
+function renderDocuments(){
+  const list = read(KEYS.docs);
+  $('docTbody').innerHTML = list.length ? list.map(d=>`<tr>
+    <td>${esc(d.title)}</td><td>${esc(d.owner||'')}</td><td>${esc(new Date(d.at).toLocaleString())}</td>
+    <td>${d.data ? `<a href="${d.data}" download="${esc(d.fileName||'file')}">Download</a>` : '<span class="small">No file</span>'}</td>
+    <td><button class="danger-btn" onclick="deleteDoc('${d.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="5" class="small">No documents.</td></tr>';
+}
+
+/* ==================== FEEDBACK ==================== */
+function saveFeedback(){
+  const msg = $('fbMessage').value.trim(); if(!msg){alert('Message required');return;}
+  const list = read(KEYS.feedback);
+  list.unshift({ id:uid(), patient:$('fbPatient').value.trim(), type:$('fbType').value, severity:$('fbSeverity').value, message:msg, status:'Open', at:new Date().toISOString() });
+  write(KEYS.feedback, list);
+  logAudit('FEEDBACK_ADD', `${$('fbType').value} - ${$('fbSeverity').value}`);
+  ['fbPatient','fbMessage'].forEach(id=>$(id).value='');
+  renderFeedback(); renderNotifications();
+}
+function setFeedbackStatus(id,status){ const list=read(KEYS.feedback); const f=list.find(x=>x.id===id); if(!f)return; f.status=status; write(KEYS.feedback,list); renderFeedback(); renderNotifications(); }
+function deleteFeedback(id){ if(!confirm('Delete feedback?'))return; write(KEYS.feedback, read(KEYS.feedback).filter(x=>x.id!==id)); renderFeedback(); }
+function renderFeedback(){
+  const list = read(KEYS.feedback);
+  $('fbTbody').innerHTML = list.length ? list.map(f=>`<tr>
+    <td>${esc(f.patient||'anonymous')}</td><td>${esc(f.type)}</td>
+    <td><span class="badge ${f.severity==='High'?'red':f.severity==='Medium'?'amber':'blue'}">${esc(f.severity)}</span></td>
+    <td><span class="badge ${f.status==='Open'?'amber':'green'}">${esc(f.status)}</span></td>
+    <td><button class="secondary" onclick="setFeedbackStatus('${f.id}','Resolved')">Resolve</button> <button class="danger-btn" onclick="deleteFeedback('${f.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="5" class="small">No feedback yet.</td></tr>';
+}
+
+/* ==================== EMERGENCY ==================== */
+function saveEmergency(){
+  const patient = $('emPatient').value.trim(); if(!patient){alert('Patient required');return;}
+  const list = read(KEYS.emergency);
+  list.unshift({ id:uid(), patient, triage:$('emTriage').value, arrival:$('emArrival').value, assess:$('emAssess').value, notes:$('emNotes').value.trim(), status:'In triage', at:new Date().toISOString() });
+  write(KEYS.emergency, list);
+  logAudit('EMERGENCY_ADD', `${patient} - ${$('emTriage').value}`);
+  ['emPatient','emArrival','emAssess','emNotes'].forEach(id=>$(id).value='');
+  renderEmergency(); renderNotifications();
+}
+function setEmergencyStatus(id,status){ const list=read(KEYS.emergency); const e=list.find(x=>x.id===id); if(!e)return; e.status=status; write(KEYS.emergency,list); renderEmergency(); renderNotifications(); }
+function deleteEmergency(id){ if(!confirm('Delete case?'))return; write(KEYS.emergency, read(KEYS.emergency).filter(x=>x.id!==id)); renderEmergency(); }
+function renderEmergency(){
+  const list = read(KEYS.emergency);
+  $('emTbody').innerHTML = list.length ? list.map(e=>`<tr>
+    <td>${esc(e.patient)}</td>
+    <td><span class="badge ${e.triage?.startsWith('Red')?'red':e.triage?.startsWith('Orange')?'amber':'blue'}">${esc(e.triage)}</span></td>
+    <td>${esc(e.arrival||'')}</td><td>${esc(e.assess||'')}</td>
+    <td><span class="badge ${e.status==='In triage'?'amber':'green'}">${esc(e.status)}</span></td>
+    <td><button class="secondary" onclick="setEmergencyStatus('${e.id}','Referred')">Refer</button> <button class="secondary" onclick="setEmergencyStatus('${e.id}','Closed')">Close</button> <button class="danger-btn" onclick="deleteEmergency('${e.id}')">Del</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" class="small">No emergency cases.</td></tr>';
+}
+
+/* ==================== AI ==================== */
+function aiDailySummary(){
+  const records = read(KEYS.records).filter(r => (r.reportDate||'').startsWith(today()));
+  const admitted = records.filter(r=>r.patientStatus==='Admitted').length;
+  const discharged = records.filter(r=>r.patientStatus==='Discharged').length;
+  const billed = records.reduce((s,r)=>s+(Number(r.totalBill)||0),0);
+  const paid = records.reduce((s,r)=>s+(Number(r.amountPaid)||0),0);
+  $('aiOutput').textContent = `DAILY SUMMARY — ${today()}\n\nReports submitted today: ${records.length}\nAdmitted: ${admitted}\nDischarged: ${discharged}\nTotal billed (RWF): ${billed.toLocaleString()}\nTotal collected (RWF): ${paid.toLocaleString()}\nOutstanding (RWF): ${(billed-paid).toLocaleString()}\n\nKey events:\n${records.slice(0,5).map(r=>'• '+ (r.patientName||'Patient') + ' — ' + (r.patientStatus||'status not set')).join('\n') || '• No reports yet.'}`;
+  logAudit('AI_SUMMARY', 'Daily summary generated');
+}
+function aiQualityCheck(){
+  const records = read(KEYS.records);
+  const issues = [];
+  records.forEach(r => {
+    const miss = [];
+    if (!r.diagnosis) miss.push('diagnosis');
+    if (!r.treatment) miss.push('treatment');
+    if (!r.clinician) miss.push('clinician');
+    if (!r.careUnit) miss.push('department/ward');
+    if (miss.length) issues.push(`• ${r.patientName||'Unnamed'} (${r.reportDate||''}): missing ${miss.join(', ')}`);
+  });
+  $('aiOutput').textContent = issues.length ? 'QUALITY CHECK — possible missing data:\n\n' + issues.join('\n') : 'QUALITY CHECK — all submitted reports look complete. ✓';
+  logAudit('AI_QUALITY', 'Quality check run');
+}
+function aiManagementReport(){
+  const records = read(KEYS.records);
+  const total = records.length;
+  const submitted = records.filter(r=>r.submitted).length;
+  const beds = read(KEYS.beds);
+  const meds = read(KEYS.meds);
+  const lowStock = meds.filter(m=>Number(m.qty)<=5).length;
+  const revenue = records.reduce((s,r)=>s+(Number(r.amountPaid)||0),0);
+  $('aiOutput').textContent = `MANAGEMENT REPORT\n=================\n\nReporting activity:\n- Total reports: ${total}\n- Submitted: ${submitted}\n- Drafts: ${total - submitted}\n\nBeds:\n- Total: ${beds.length}\n- Occupied: ${beds.filter(b=>b.status==='Occupied').length}\n- Available: ${beds.filter(b=>b.status==='Available').length}\n\nPharmacy:\n- Total items: ${meds.length}\n- Low stock items: ${lowStock}\n\nFinance:\n- Total collected (RWF): ${revenue.toLocaleString()}\n\nRecommendation: review low-stock medicines and pending drafts.`;
+  logAudit('AI_MGMT_REPORT', 'Management report generated');
+}
+
+/* ==================== USERS ==================== */
+function renderUsers(){
+  const users = read(KEYS.accounts);
+  $('usersTbody').innerHTML = users.length ? users.map(u=>`<tr>
+    <td>${esc(u.username)}</td><td>${esc(ROLE_LABELS[u.role]||u.role||'—')}</td><td>${esc(u.email)}</td><td>${esc(u.phone)}</td>
+    <td><button class="danger-btn" onclick="deleteUser('${esc(u.username)}')">Delete</button></td>
+  </tr>`).join('') : '<tr><td colspan="5" class="small">No users registered.</td></tr>';
+}
+function deleteUser(username){
+  if (!confirm('Delete user '+username+'?')) return;
+  if (username === currentUser){ alert('You cannot delete the currently logged-in user.'); return; }
+  write(KEYS.accounts, read(KEYS.accounts).filter(u=>u.username!==username));
+  logAudit('USER_DELETE', username); renderUsers();
+}
+function renderRolesTable(){
+  $('rolesTable').innerHTML = Object.entries(ROLE_PERMS).map(([role,perms])=>`
+    <div style="padding:8px 0;border-bottom:1px dashed #e4ebf1">
+      <strong>${esc(ROLE_LABELS[role]||role)}</strong><br>
+      <span class="chip-list">${perms.map(p=>`<span class="chip">${esc(p)}</span>`).join('')}</span>
+    </div>
+  `).join('');
+}
+
+/* ==================== INIT ==================== */
+(function init(){
+  const savedUser = sessionStorage.getItem('emmy_user');
+  const savedRole = sessionStorage.getItem('emmy_role');
+  if (savedUser) { currentUser = savedUser; currentRole = savedRole || 'admin'; bootApp(); }
+  else { showAuth('login'); }
+
+  const accounts = read(KEYS.accounts);
+  if (!accounts.some(a=>a.username==='admin')) {
+    hashPassword('admin1234').then(h => {
+      const list = read(KEYS.accounts);
+      if (!list.some(a=>a.username==='admin')) {
+        list.push({ username:'admin', email:'admin@hospital.rw', phone:'+250700000000', role:'admin', passwordHash:h });
+        write(KEYS.accounts, list);
+      }
+    }).catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
